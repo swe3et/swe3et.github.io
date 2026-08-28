@@ -20,13 +20,16 @@ const NICKNAME_KEY = 'word-sprint-nickname-v1';
 const DAILY_STATS_KEY = 'word-sprint-daily-stats-v1';
 const STREAK_KEY = 'word-sprint-streak-v1';
 const XP_KEY = 'word-sprint-total-xp-v1';
+const PLAYER_LEVEL_KEY = 'word-sprint-player-level-v1';
+const PLACEMENT_KEY = 'word-sprint-placement-complete-v1';
 const PERSONAL_LIBRARY_KEY = 'word-sprint-library-v1';
 const WORD_GROUPS_KEY = 'word-sprint-word-groups-v1';
 const PRACTICE_XP = 100;
-let dictionaryCache = loadStore(CACHE_KEY), savedWords = loadStore(SAVED_KEY), personalLibrary = loadStore(PERSONAL_LIBRARY_KEY), wordGroups = loadStore(WORD_GROUPS_KEY), activeCollection = 'all', dailyBest = loadDailyBest(), dailyScore = dailyBest.score, dailyStats = loadDailyStats(), totalXp = Number(localStorage.getItem(XP_KEY)) || 0, playerNickname = localStorage.getItem(NICKNAME_KEY) || '', currentWord = '', practiceMode = 'choice', index = 0, roundScore = 0, locked = false, roundActive = false;
+let dictionaryCache = loadStore(CACHE_KEY), savedWords = loadStore(SAVED_KEY), personalLibrary = loadStore(PERSONAL_LIBRARY_KEY), wordGroups = loadStore(WORD_GROUPS_KEY), activeCollection = 'all', dailyBest = loadDailyBest(), dailyScore = dailyBest.score, dailyStats = loadDailyStats(), totalXp = Number(localStorage.getItem(XP_KEY)) || 0, playerNickname = localStorage.getItem(NICKNAME_KEY) || '', playerLevel = localStorage.getItem(PLAYER_LEVEL_KEY) || 'lv1', currentWord = '', practiceMode = 'choice', index = 0, roundScore = 0, locked = false, roundActive = false;
 const modeState = { choice: { index: 0, roundScore: 0, active: false }, spelling: { index: 0, roundScore: 0, active: false } };
 const roundStartedAt = { choice: null, spelling: null };
 let roundWords = [];
+let placementState = { index: 0, score: 0, words: [] };
 const $ = selector => document.querySelector(selector);
 
 function loadStore(key) { try { return JSON.parse(localStorage.getItem(key)) || {}; } catch { return {}; } }
@@ -53,9 +56,18 @@ function getTimeMultiplier() { const elapsedSeconds = getElapsedSeconds(); if (e
 function formatDuration(seconds) { return `${Math.floor(seconds / 60)}:${String(seconds % 60).padStart(2, '0')}`; }
 function applyCompletionBonus() { const timing = getTimeMultiplier(); const accuracy = Math.round(roundScore); const eligibleForBonus = accuracy >= 70; const multiplier = eligibleForBonus ? timing.multiplier : 1; return { ...timing, multiplier, accuracy, eligibleForBonus, finalScore: roundScore }; }
 function initials(name) { return [...name].slice(0, 1).join('').toUpperCase() || '?'; }
-function updatePlayerIdentity() { $('#playerAvatar').textContent = initials(playerNickname); }
+function updatePlayerIdentity() { $('#playerAvatar').textContent = initials(playerNickname); $('#playerLevelName').textContent = playerLevelLabel(); }
 function openNicknameModal() { $('#nicknameInput').value = playerNickname; $('#nicknameModal').classList.add('open'); setTimeout(() => $('#nicknameInput').focus(), 0); }
-function saveNickname(event) { event.preventDefault(); const input = $('#nicknameInput'); input.setCustomValidity(''); const name = input.value.replace(/[<>]/g, '').trim().slice(0, 12); if (!name) { input.setCustomValidity('請輸入暱稱'); input.reportValidity(); return; } playerNickname = name; localStorage.setItem(NICKNAME_KEY, playerNickname); $('#nicknameModal').classList.remove('open'); updatePlayerIdentity(); renderLeaderboard(); updateStats(); }
+function saveNickname(event) { event.preventDefault(); const input = $('#nicknameInput'); input.setCustomValidity(''); const name = input.value.replace(/[<>]/g, '').trim().slice(0, 12); if (!name) { input.setCustomValidity('請輸入暱稱'); input.reportValidity(); return; } playerNickname = name; localStorage.setItem(NICKNAME_KEY, playerNickname); $('#nicknameModal').classList.remove('open'); updatePlayerIdentity(); renderLeaderboard(); updateStats(); if (!localStorage.getItem(PLACEMENT_KEY)) openPlacementAssessment(); }
+function getPlacementLevel(score) { return score <= 3 ? 'lv1' : score <= 6 ? 'lv2' : 'lv3'; }
+function playerLevelLabel(level = playerLevel) { return level === 'lv3' ? '單字高手' : level === 'lv2' ? '穩步進階' : '單字新手'; }
+function openPlacementAssessment() { placementState = { index: 0, score: 0, words: shuffle(quizWords).slice(0, 10) }; $('#placementModal').classList.add('open'); renderPlacementQuestion(); }
+function renderPlacementQuestion() { const state = placementState; if (state.index >= 10) { const level = getPlacementLevel(state.score); playerLevel = level; localStorage.setItem(PLAYER_LEVEL_KEY, level); localStorage.setItem(PLACEMENT_KEY, 'true'); updatePlayerIdentity(); $('#placementProgress').textContent = '已完成分級。'; $('#placementContent').innerHTML = `<div class="placement-result"><b>${playerLevelLabel(level)}</b>答對 ${state.score} / 10 題。每日練習會依此難度補足單字。<button class="primary-button" id="finishPlacement">開始學習 <span>→</span></button></div>`; $('#finishPlacement').onclick = () => $('#placementModal').classList.remove('open'); return; }
+  const entry = state.words[state.index]; const isChoice = state.index < 5; $('#placementProgress').textContent = `第 ${state.index + 1} / 10 題 · ${isChoice ? '選擇題' : '填字題'} · ${entry.level}`;
+  if (isChoice) { $('#placementContent').innerHTML = `<div class="placement-question"><p class="placement-word">${escapeHtml(entry.word)}</p><p class="placement-prompt">請選出最接近的中文意思</p><div class="placement-options">${shuffle(entry.options).map(option => `<button data-placement-answer="${escapeHtml(option)}">${escapeHtml(option)}</button>`).join('')}</div></div>`; $('#placementContent').querySelectorAll('[data-placement-answer]').forEach(button => button.onclick = () => { const correct = button.dataset.placementAnswer === entry.zh; $('#placementContent').querySelectorAll('button').forEach(item => { item.disabled = true; if (item.dataset.placementAnswer === entry.zh) item.classList.add('correct'); }); if (!correct) button.classList.add('wrong'); advancePlacement(correct); }); return; }
+  $('#placementContent').innerHTML = `<form class="placement-question" id="placementForm"><p class="placement-prompt">中文提示：${escapeHtml(entry.zh)}</p><input class="placement-input" id="placementInput" autocomplete="off" autocapitalize="none" placeholder="填入英文單字" required><button class="primary-button" type="submit">確認 <span>→</span></button></form>`; $('#placementForm').onsubmit = event => { event.preventDefault(); const correct = $('#placementInput').value.trim().toLowerCase() === entry.word; $('#placementInput').disabled = true; advancePlacement(correct); };
+}
+function advancePlacement(correct) { if (correct) placementState.score += 1; setTimeout(renderPlacementQuestion, 450); placementState.index += 1; }
 function speak(text) { if ('speechSynthesis' in window) { speechSynthesis.cancel(); const utterance = new SpeechSynthesisUtterance(text); utterance.lang = 'en-US'; utterance.rate = .82; speechSynthesis.speak(utterance); } }
 function shuffle(list) { return [...list].sort(() => Math.random() - .5); }
 function setSearchStatus(message, type = '') { const status = $('#searchStatus'); status.textContent = message; status.className = `search-status ${type}`; }
@@ -87,15 +99,19 @@ function checkSpelling(entry) { if (locked) return; const cells = [...document.q
 function reveal(entry) { locked = true; [...document.querySelectorAll('.answer')].find(button => button.textContent === entry.zh)?.classList.add('correct'); $('#quizMessage').textContent = `正確答案是「${entry.word}」。`; }
 function finishRound() { locked = true; const result = applyCompletionBonus(); updateQuizTime(); roundActive = false; recordDailyBest(result.finalScore, result.elapsedSeconds); const earnedXp = grantPracticeXp(result.multiplier); saveModeState(); $('#questionNumber').textContent = '10'; $('#quizProgress').style.width = '100%'; $('#quizScore').textContent = `${result.finalScore} 分`; $('#quizWord').textContent = '本回合完成！'; $('#quizPhonetic').textContent = ''; $('.question-label').textContent = `共 10 題 · 每題 10 分 · 完成時間 ${formatDuration(result.elapsedSeconds)}`; $('#answers').innerHTML = `<div class="round-result"><b>${result.stars}　${result.finalScore} 分</b><span>${result.stars} 速度評價 · ${result.eligibleForBonus ? (result.multiplier > 1 ? `答對率 ${result.accuracy}% ，XP 加成 ×${result.multiplier}！` : `答對率 ${result.accuracy}% ，獲得基本 XP。`) : `答對率 ${result.accuracy}% 未達 70%，不套用 XP 加成。`} 完成每日練習，獲得 ${earnedXp} XP。</span></div>`; $('#quizMessage').textContent = ''; $('#nextQuestion').dataset.complete = 'true'; $('#nextQuestion').innerHTML = '再玩一次 <span>↻</span>'; }
 function nextLearningQuestion() { if ($('#nextQuestion').dataset.complete === 'true') { index = 0; roundScore = 0; roundStartedAt[practiceMode] = null; roundActive = false; saveModeState(); delete $('#nextQuestion').dataset.complete; renderQuiz(); return; } if (!locked) { if (practiceMode === 'spelling') { const cells = [...document.querySelectorAll('.letter-cell')]; if (cells.length && cells.every(cell => cell.value)) { checkSpelling(roundWords[index] || quizWords[index]); return; } $('#quizMessage').textContent = '請先填完所有字母格。'; return; } $('#quizMessage').textContent = '請先選擇一個答案。'; return; } if (index === 9) { finishRound(); return; } index += 1; saveModeState(); renderQuiz(); }
-function getLibraryQuizWords() {
-  const candidates = Object.keys(personalLibrary).map(word => dictionaryCache[word]).filter(entry => entry?.word && entry.zhMeaning && entry.zhMeaning !== '中文翻譯暫時不可用');
-  if (candidates.length < 10) return [];
-  return shuffle(candidates).slice(0, 10).map(entry => {
-    const incorrectMeanings = shuffle(candidates.filter(candidate => candidate.word !== entry.word && candidate.zhMeaning !== entry.zhMeaning).map(candidate => candidate.zhMeaning)).slice(0, 3);
-    return { word: entry.word, phonetic: entry.phonetic || '—', zh: entry.zhMeaning, level: entry.level || '表外單字', options: shuffle([entry.zhMeaning, ...incorrectMeanings]) };
-  });
+function getLibraryQuizEntries() { return shuffle(Object.keys(personalLibrary).map(word => dictionaryCache[word]).filter(entry => entry?.word && entry.zhMeaning && entry.zhMeaning !== '中文翻譯暫時不可用')); }
+function getDifficultyRange() { return playerLevel === 'lv3' ? [5, 6] : playerLevel === 'lv2' ? [3, 4] : [1, 2]; }
+function toQuizWords(entries) { return entries.slice(0, 10).map(entry => { const incorrectMeanings = shuffle(entries.filter(candidate => candidate.word !== entry.word && candidate.zhMeaning !== entry.zhMeaning).map(candidate => candidate.zhMeaning)).slice(0, 3); return { word: entry.word, phonetic: entry.phonetic || '—', zh: entry.zhMeaning, level: entry.level || '表外單字', options: shuffle([entry.zhMeaning, ...incorrectMeanings]) }; }); }
+async function supplementQuizEntries(entries) {
+  const [minimum, maximum] = getDifficultyRange(); const included = new Set(entries.map(entry => entry.word)); const pool = shuffle(vocabulary.filter(item => { const level = Number(item.level.replace('Level ', '')); return level >= minimum && level <= maximum && !included.has(item.word) && /^[a-z]+$/.test(item.word); }));
+  while (entries.length < 10 && pool.length) {
+    const batch = pool.splice(0, Math.min(6, pool.length)); const fetched = await Promise.all(batch.map(async item => { try { const entry = dictionaryCache[item.word] || await fetchWord(item.word); if (entry?.zhMeaning && entry.zhMeaning !== '中文翻譯暫時不可用') { dictionaryCache[item.word] = entry; return entry; } } catch {} return null; }));
+    fetched.filter(Boolean).forEach(entry => { if (!included.has(entry.word) && entries.length < 10) { entries.push(entry); included.add(entry.word); } });
+  }
+  saveStore(CACHE_KEY, dictionaryCache); return entries;
 }
-function startRound() { const selectedWords = getLibraryQuizWords(); if (selectedWords.length < 10) { $('#startRoundInfo').textContent = `我的詞庫目前只有 ${selectedWords.length || Object.keys(personalLibrary).length} 個可用單字；請先在單字查詢中成功查詢至少 10 個單字。`; return; } index = 0; roundScore = 0; roundWords = selectedWords; roundStartedAt[practiceMode] = Date.now(); roundActive = true; saveModeState(); renderQuiz(); }
+function setQuizLoading(active, message = '') { $('#quizLoadingText').textContent = message || '正在從 6000 單字取得詞義，請稍候。'; $('#quizLoading').classList.toggle('open', active); }
+async function startRound() { const button = $('#startRound'); if (button.disabled) return; button.disabled = true; const entries = getLibraryQuizEntries().slice(0, 10); const missing = Math.max(0, 10 - entries.length); try { if (missing) { const message = `正在依「${playerLevelLabel()}」難度補足 ${missing} 題，準備完成後會自動開始練習。`; $('#startRoundInfo').textContent = message; setQuizLoading(true, message); await supplementQuizEntries(entries); } if (entries.length < 10) { $('#startRoundInfo').textContent = '免費字典暫時無法取得足夠詞義，請確認網路後再試。'; return; } index = 0; roundScore = 0; roundWords = toQuizWords(entries); roundStartedAt[practiceMode] = Date.now(); roundActive = true; saveModeState(); renderQuiz(); } finally { button.disabled = false; setQuizLoading(false); } }
 
 function findLookalikes(word) {
   const candidates = vocabulary.filter(item => item.word !== word && Math.abs(item.word.length - word.length) <= 2);
@@ -208,4 +224,5 @@ $('#groupForm').addEventListener('submit', createWordGroup);
 $('#openGroupForm').onclick = openGroupForm;
 let searchDelay; $('#wordSearch').addEventListener('input', event => { clearTimeout(searchDelay); renderSuggestions(event.target.value); const word = normalizeWord(event.target.value); if (word.length >= 2) searchDelay = setTimeout(() => lookupWord(word), 550); }); $('#wordSearch').addEventListener('keydown', event => { if (event.key === 'Enter') { clearTimeout(searchDelay); lookupWord(event.target.value); } });
 $('#clearCache').onclick = () => { dictionaryCache = {}; localStorage.removeItem(CACHE_KEY); setSearchStatus('已清除詞典快取；個人新增單字清單仍會保留。', 'success'); }; $('#refreshWord').onclick = () => currentWord ? lookupWord(currentWord, true) : setSearchStatus('請先查詢一個單字。'); $('#showSaved').onclick = showSavedWords;
-$('#vocabCount').textContent = vocabulary.length.toLocaleString(); updatePlayerIdentity(); updateStats(); updateXp(); renderSuggestions(); updateSavedCount(); renderQuiz(); renderLeaderboard(); renderLibrary(); setInterval(updateQuizTime, 1000); if (!playerNickname) openNicknameModal();
+$('#vocabCount').textContent = vocabulary.length.toLocaleString(); updatePlayerIdentity(); updateStats(); updateXp(); renderSuggestions(); updateSavedCount(); renderQuiz(); renderLeaderboard(); renderLibrary(); setInterval(updateQuizTime, 1000); if (!playerNickname) openNicknameModal(); else if (!localStorage.getItem(PLACEMENT_KEY)) openPlacementAssessment();
+
