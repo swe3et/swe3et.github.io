@@ -16,7 +16,7 @@
       <section class="topbar">
         <div class="brand"><span class="brand-mark">W</span><span>WORD<br />SPRINT</span></div>
         <div class="xp-pill" aria-label="等級與經驗值"><span class="xp-level" id="xpLevel">LV1</span><div class="xp-copy"><b id="xpText">0 / 1,000 XP</b><i class="xp-track"><em id="xpProgress"></em></i></div></div>
-        <button class="avatar" id="playerAvatar" aria-label="設定玩家暱稱">?</button>
+        <div class="player-badge"><button class="avatar" id="playerAvatar" aria-label="設定玩家暱稱">?</button><span id="playerLevelName">單字新手</span></div>
       </section>
 
       <section class="hero">
@@ -87,7 +87,12 @@
     <div class="nickname-modal" id="nicknameModal" role="dialog" aria-modal="true" aria-labelledby="nicknameTitle">
       <form class="nickname-card" id="nicknameForm"><span class="nickname-icon">✦</span><p class="eyebrow">WELCOME TO WORD SPRINT</p><h2 id="nicknameTitle">設定你的暱稱</h2><p>排行榜會顯示這個名稱，方便辨識你的每日成績。</p><input id="nicknameInput" type="text" maxlength="12" autocomplete="nickname" placeholder="例如：英文小高手" aria-label="玩家暱稱" required><button class="primary-button" type="submit">開始練習 <span>→</span></button></form>
     </div>
+    <div class="nickname-modal" id="placementModal" role="dialog" aria-modal="true" aria-labelledby="placementTitle">
+      <div class="nickname-card placement-card"><span class="nickname-icon">✦</span><p class="eyebrow">STARTING ASSESSMENT</p><h2 id="placementTitle">新手分級測驗</h2><p id="placementProgress">共 10 題：選擇題 5 題、填字題 5 題。</p><div id="placementContent"></div></div>
+    </div>
+    <div class="nickname-modal" id="quizLoading" role="status" aria-live="assertive" aria-label="正在準備題目"><div class="nickname-card loading-card"><span class="loading-spinner"></span><p class="eyebrow">PREPARING YOUR PRACTICE</p><h2>正在補足練習題目</h2><p id="quizLoadingText">正在從 6000 單字取得詞義，請稍候。</p></div></div>
     <script src="vocabulary-6000.js"></script>
     <script src="app.js"></script>
   </body>
 </html>
+
