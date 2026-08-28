@@ -57,4 +57,3 @@
 .loading-spinner { display: block; width: 42px; height: 42px; margin: 0 auto 13px; border: 4px solid #e9e4fb; border-top-color: #7458e6; border-radius: 50%; animation: word-sprint-spin .75s linear infinite; }
 @keyframes word-sprint-spin { to { transform: rotate(360deg); } }
 .library-empty { padding: 38px 18px; border: 1px dashed #dcd7eb; border-radius: 18px; color: #86889d; text-align: center; font-size: 13px; }
-
