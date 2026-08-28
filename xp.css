@@ -1,0 +1,42 @@
+.topbar { gap: 9px; }
+.xp-pill { min-width: 128px; display: flex; align-items: center; gap: 7px; background: #fff5d9; border: 1px solid #ffe7a4; border-radius: 15px; padding: 7px 9px; color: #8b6813; }
+.xp-level { background: #f9b731; border-radius: 8px; color: #5b4309; padding: 4px 5px; font: 900 10px 'DM Mono'; }
+.xp-copy { display: grid; gap: 4px; min-width: 0; flex: 1; }
+.xp-copy b { font: 900 10px 'DM Mono'; white-space: nowrap; }
+.xp-track { display: block; height: 5px; background: #f0d99a; border-radius: 10px; overflow: hidden; }
+.xp-track em { display: block; height: 100%; width: 0; background: linear-gradient(90deg, #f8b62b, #ff8e31); border-radius: inherit; transition: width .35s; }
+.quiz-time { color: #777b98; font: 800 11px 'DM Mono'; white-space: nowrap; }
+.round-start-panel { display: grid; justify-items: center; gap: 10px; padding: 32px 22px; border: 1px solid #e7e3f1; border-radius: 22px; background: #fff; text-align: center; box-shadow: 0 14px 35px rgba(46, 38, 100, .05); }
+.round-start-panel > span { display: grid; place-items: center; width: 42px; height: 42px; border-radius: 14px; background: #eeeaff; color: #7054e3; font-size: 20px; }
+.round-start-panel strong { color: #202044; font-size: 17px; }
+.round-start-panel p { margin: 0; color: #797b93; font-size: 12px; line-height: 1.65; }
+.round-start-panel .primary-button { margin-top: 7px; }
+.library-create-card { display: grid; gap: 16px; padding: 19px; border: 1px solid #e5e1ef; border-radius: 19px; background: #fff; }
+.library-create-card strong { color: #222143; font-size: 15px; }
+.library-create-card p { margin: 5px 0 0; color: #85879a; font-size: 12px; }
+.group-form { display: flex; gap: 8px; }
+.group-form input { min-width: 0; flex: 1; border: 1px solid #ddd8ed; border-radius: 10px; padding: 10px 11px; outline: 0; font: 700 13px Nunito, 'Noto Sans TC'; }
+.group-form button, .collection-tabs button, .group-select { border: 1px solid #ddd8ed; border-radius: 9px; background: #fff; color: #62647c; padding: 8px 10px; font: 800 12px Nunito, 'Noto Sans TC'; }
+.group-form button { border: 0; background: #7659e7; color: #fff; }
+.create-group-button { justify-self: start; border: 0; border-radius: 10px; background: #eeeaff; color: #674ddb; padding: 9px 12px; font: 900 12px Nunito, 'Noto Sans TC'; cursor: pointer; }
+.collection-tabs { display: flex; gap: 7px; overflow-x: auto; padding: 16px 0 11px; }
+.collection-tabs button { white-space: nowrap; cursor: pointer; }
+.collection-tabs button.active { border-color: #7054e3; background: #eeeaff; color: #6248d4; }
+.library-list { display: grid; gap: 10px; }
+.library-word { display: grid; gap: 11px; padding: 16px; border: 1px solid #e8e5f0; border-radius: 17px; background: #fff; }
+.library-word-top { display: flex; justify-content: space-between; gap: 13px; align-items: start; }
+.library-word h3 { margin: 0; color: #242244; font: 900 19px 'DM Mono'; }
+.library-word p { margin: 4px 0 0; color: #72748d; font-size: 12px; }
+.rating-stars { display: flex; gap: 1px; }
+.rating-stars button { border: 0; background: transparent; padding: 1px; color: #d8d5e3; cursor: pointer; font-size: 21px; line-height: 1; }
+.rating-stars button.active { color: #f6b72f; }
+.library-word-bottom { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.word-group-chip { border-radius: 8px; background: #f0edfa; color: #6d56cc; padding: 5px 7px; font-size: 10px; font-weight: 900; }
+.group-remove { border: 0; cursor: pointer; }
+.group-remove::after { content: ' ×'; color: #9b8bd8; }
+.word-group-none { background: #f2f2f5; color: #8b8c9a; }
+.delete-word { margin-left: auto; border: 0; border-radius: 8px; background: #fff0f3; color: #c5526c; padding: 6px 8px; font: 800 11px Nunito, 'Noto Sans TC'; cursor: pointer; }
+.collection-add { display: flex; align-items: center; gap: 8px; margin: 0 0 11px; padding: 11px; border-radius: 12px; background: #f7f5fc; color: #696a83; font-size: 12px; font-weight: 800; }
+.collection-add select { min-width: 0; flex: 1; border: 1px solid #ddd8ed; border-radius: 8px; background: #fff; padding: 7px; color: #55566f; font: 700 12px Nunito, 'Noto Sans TC'; }
+.delete-group { border: 0; border-radius: 8px; background: #fff0f3; color: #c5526c; padding: 7px 8px; font: 800 11px Nunito, 'Noto Sans TC'; cursor: pointer; white-space: nowrap; }
+.library-empty { padding: 38px 18px; border: 1px dashed #dcd7eb; border-radius: 18px; color: #86889d; text-align: center; font-size: 13px; }

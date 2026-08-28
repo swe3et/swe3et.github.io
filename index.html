@@ -1,0 +1,93 @@
+<!doctype html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#171a35" />
+    <title>Word Sprint | 英文6000單</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Nunito:wght@600;700;800;900&family=Noto+Sans+TC:wght@500;700;900&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="styles.css" />
+    <link rel="stylesheet" href="xp.css" />
+  </head>
+  <body>
+    <main class="app-shell">
+      <section class="topbar">
+        <div class="brand"><span class="brand-mark">W</span><span>WORD<br />SPRINT</span></div>
+        <div class="xp-pill" aria-label="等級與經驗值"><span class="xp-level" id="xpLevel">LV1</span><div class="xp-copy"><b id="xpText">0 / 1,000 XP</b><i class="xp-track"><em id="xpProgress"></em></i></div></div>
+        <button class="avatar" id="playerAvatar" aria-label="設定玩家暱稱">?</button>
+      </section>
+
+      <section class="hero">
+        <div><p class="eyebrow">TODAY'S MISSION</p><h1>把單字，<em>玩進腦袋裡。</em></h1><p class="subcopy">6000 單字不是終點，是你的競技場。</p></div>
+        <div class="mascot" aria-hidden="true"><div class="mascot-ear left"></div><div class="mascot-ear right"></div><div class="mascot-face"><i></i><i></i><b></b></div><span>✦</span></div>
+      </section>
+
+      <section class="stats-row" aria-label="今日進度">
+        <article><span class="stat-icon amber">🔥</span><div><strong id="streakValue">0</strong><small>連續學習天數</small></div></article>
+        <article><span class="stat-icon blue">✓</span><div><strong id="learnedValue">0</strong><small>今天已掌握</small></div></article>
+        <article><span class="stat-icon pink">⚡</span><div><strong id="accuracyValue">0%</strong><small>今日正確率</small></div></article>
+        <article><span class="stat-icon rank">🏆</span><div><strong id="dailyRankValue">—</strong><small>今日名次</small></div></article>
+      </section>
+
+      <nav class="mode-tabs" aria-label="主要功能">
+        <button class="tab active" data-screen="learn">學習</button>
+        <button class="tab" data-screen="battle">每日排行</button>
+        <button class="tab" data-screen="dictionary">單字查詢</button>
+        <button class="tab" data-screen="library">我的詞庫</button>
+      </nav>
+
+      <section class="screen active" id="learn">
+        <div class="section-heading"><div><p class="eyebrow">QUICK ROUND</p><h2>快問快答</h2></div><span class="round-count"><b id="questionNumber">01</b> / 10</span></div>
+        <div class="practice-toggle" role="tablist" aria-label="練習模式"><button class="active" data-practice="choice" role="tab">選擇題</button><button data-practice="spelling" role="tab">填詞練習</button></div>
+        <div class="round-start-panel" id="roundStartPanel"><span>⏱</span><strong>準備好開始每日練習了嗎？</strong><p id="startRoundInfo">每回合從我的詞庫隨機抽取 10 個單字。答對率達 70% 才有 XP 加成：1:30 內 ★★★（XP ×2） · 2:30 內 ★★（XP ×1.5） · 超過 2:30 ★（XP ×1）</p><button class="primary-button" id="startRound">開始本回合 <span>→</span></button></div>
+        <article class="quiz-card" id="quizCard" hidden>
+          <div class="quiz-meta"><span class="level-tag" id="wordLevel">Level 2</span><span id="quizScore">0 / 100 分</span><span class="quiz-time" id="quizTime" aria-label="本回合時間">⏱ 0:00</span></div>
+          <button class="sound-button" id="speakQuizWord" aria-label="朗讀單字">⌁</button>
+          <p class="quiz-word" id="quizWord">abundant</p>
+          <p class="phonetic" id="quizPhonetic">/əˈbʌndənt/</p>
+          <p class="question-label">這個字最接近哪個意思？</p>
+          <div class="answers" id="answers"></div>
+          <p class="quiz-message" id="quizMessage" aria-live="polite"></p>
+        </article>
+        <button class="primary-button" id="nextQuestion" hidden>下一題 <span>→</span></button>
+        <div class="progress-track"><i id="quizProgress"></i></div>
+      </section>
+
+      <section class="screen" id="battle">
+        <div class="section-heading"><div><p class="eyebrow">DAILY PRACTICE RANKING</p><h2>每日排行榜</h2></div><span class="online-dot" id="rankingCount">0 人上榜</span></div>
+        <article class="battle-card ranking-card">
+          <div class="battle-orbit orbit-one">✦</div><div class="battle-orbit orbit-two">🏆</div>
+          <p class="ranking-kicker">TODAY'S SCORE</p><strong id="dailyScore">0</strong><span class="ranking-unit">分</span>
+          <h3>每天練習，為自己上榜</h3><p>只取每日單回合最高分；同分時以完成時間較短者優先。</p>
+          <button class="primary-button" id="startPractice">開始練習 <span>→</span></button>
+        </article>
+        <div class="room-list"><div class="room-heading"><h3>今日排名</h3><span class="ranking-date" id="rankingDate"></span></div><div id="leaderboard"></div></div>
+      </section>
+
+      <section class="screen" id="dictionary">
+        <div class="section-heading"><div><p class="eyebrow">WORD EXPLORER · <span id="vocabCount">6,170</span> WORDS</p><h2>單字查詢</h2></div></div>
+        <label class="search-box"><span>⌕</span><input id="wordSearch" type="search" placeholder="輸入英文單字，例如: abundant" autocomplete="off" /></label>
+        <div class="suggestion-chips" id="suggestionChips"></div>
+        <p class="search-status" id="searchStatus" role="status">內建高中英文參考詞彙表，可查詢表外單字。</p>
+        <article class="word-detail empty" id="wordDetail"><div class="detail-empty-icon">Aa</div><h3>探索一個單字</h3><p>輸入英文單字，查詢中文意思、同義字與形近字。</p></article>
+        <div class="dictionary-tools"><button id="clearCache">清除詞典快取</button><button id="refreshWord">重新查詢</button><button id="showSaved">我的新增單字 <span id="savedCount">0</span></button></div>
+        <p class="source-note">詞表依大學入學考試中心《高中英文參考詞彙表》整理，僅供非營利使用；轉載請註明出處。詞義資料由 Free Dictionary API 與翻譯服務按需取得。</p>
+      </section>
+
+      <section class="screen" id="library">
+        <div class="section-heading"><div><p class="eyebrow">MY WORD COLLECTION</p><h2>我的詞庫</h2></div><span class="round-count"><b id="libraryCount">0</b> WORDS</span></div>
+        <article class="library-create-card"><div><strong>建立單字組合</strong><p>例如：段考重點、易混淆單字、旅行英文</p></div><button class="create-group-button" id="openGroupForm" type="button">建立組合</button><form id="groupForm" class="group-form" hidden><input id="groupName" maxlength="20" placeholder="輸入組合名稱" aria-label="組合名稱" required><button type="submit">新增</button></form></article>
+        <div class="collection-tabs" id="collectionTabs"></div>
+        <div class="library-list" id="libraryList"></div>
+      </section>
+    </main>
+    <footer class="bottom-nav"><button class="active" data-screen="learn"><span>⌂</span>練習</button><button data-screen="battle"><span>🏆</span>排行</button><button data-screen="dictionary"><span>⌕</span>查詢</button><button data-screen="library"><span>★</span>詞庫</button></footer>
+    <div class="nickname-modal" id="nicknameModal" role="dialog" aria-modal="true" aria-labelledby="nicknameTitle">
+      <form class="nickname-card" id="nicknameForm"><span class="nickname-icon">✦</span><p class="eyebrow">WELCOME TO WORD SPRINT</p><h2 id="nicknameTitle">設定你的暱稱</h2><p>排行榜會顯示這個名稱，方便辨識你的每日成績。</p><input id="nicknameInput" type="text" maxlength="12" autocomplete="nickname" placeholder="例如：英文小高手" aria-label="玩家暱稱" required><button class="primary-button" type="submit">開始練習 <span>→</span></button></form>
+    </div>
+    <script src="vocabulary-6000.js"></script>
+    <script src="app.js"></script>
+  </body>
+</html>
