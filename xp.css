@@ -1,4 +1,6 @@
 .topbar { gap: 9px; }
+.player-badge { display: grid; justify-items: center; gap: 3px; }
+.player-badge > span { max-width: 54px; color: #75778c; font-size: 9px; font-weight: 900; line-height: 1; text-align: center; white-space: nowrap; }
 .xp-pill { min-width: 128px; display: flex; align-items: center; gap: 7px; background: #fff5d9; border: 1px solid #ffe7a4; border-radius: 15px; padding: 7px 9px; color: #8b6813; }
 .xp-level { background: #f9b731; border-radius: 8px; color: #5b4309; padding: 4px 5px; font: 900 10px 'DM Mono'; }
 .xp-copy { display: grid; gap: 4px; min-width: 0; flex: 1; }
@@ -39,4 +41,20 @@
 .collection-add { display: flex; align-items: center; gap: 8px; margin: 0 0 11px; padding: 11px; border-radius: 12px; background: #f7f5fc; color: #696a83; font-size: 12px; font-weight: 800; }
 .collection-add select { min-width: 0; flex: 1; border: 1px solid #ddd8ed; border-radius: 8px; background: #fff; padding: 7px; color: #55566f; font: 700 12px Nunito, 'Noto Sans TC'; }
 .delete-group { border: 0; border-radius: 8px; background: #fff0f3; color: #c5526c; padding: 7px 8px; font: 800 11px Nunito, 'Noto Sans TC'; cursor: pointer; white-space: nowrap; }
+.placement-card { max-width: 430px; }
+.placement-question { display: grid; gap: 12px; margin-top: 18px; text-align: left; }
+.placement-word { margin: 0; color: #252244; font: 900 27px 'DM Mono'; text-align: center; }
+.placement-prompt { margin: 0; color: #77798f; font-size: 13px; text-align: center; }
+.placement-options { display: grid; gap: 7px; }
+.placement-options button { border: 1px solid #e0dced; border-radius: 10px; background: #fff; color: #55566d; padding: 10px; font: 800 13px Nunito, 'Noto Sans TC'; cursor: pointer; text-align: left; }
+.placement-options button.correct { border-color: #9aca50; background: #f2fae5; color: #5d8521; }
+.placement-options button.wrong { border-color: #f2a5b4; background: #fff1f4; color: #be4f6a; }
+.placement-input { border: 1px solid #ddd8ed; border-radius: 11px; padding: 12px; font: 800 18px 'DM Mono'; outline: 0; text-align: center; }
+.placement-input:focus { border-color: #8f78ea; box-shadow: 0 0 0 3px #eeeaff; }
+.placement-result { padding: 15px 0 2px; color: #6f7189; font-size: 13px; line-height: 1.6; }
+.placement-result b { display: block; color: #644ad0; font: 900 27px 'DM Mono'; margin-bottom: 7px; }
+.loading-card { max-width: 330px; }
+.loading-spinner { display: block; width: 42px; height: 42px; margin: 0 auto 13px; border: 4px solid #e9e4fb; border-top-color: #7458e6; border-radius: 50%; animation: word-sprint-spin .75s linear infinite; }
+@keyframes word-sprint-spin { to { transform: rotate(360deg); } }
 .library-empty { padding: 38px 18px; border: 1px dashed #dcd7eb; border-radius: 18px; color: #86889d; text-align: center; font-size: 13px; }
+
